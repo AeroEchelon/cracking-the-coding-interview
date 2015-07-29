@@ -11,7 +11,7 @@
  */
 public class FindElementRotateDemo {
 
-	public static void main (String[] args) {
+	public static void main(String[] args) {
 		int[] array = {7, 8, 9, 1, 2, 3, 4, 5, 6};	
 		int elementToFind = 8;
 
@@ -20,7 +20,7 @@ public class FindElementRotateDemo {
 		System.out.println(indexOfElementToFind);
 	}
 
-	public static int findElement (int elementToFind, int[] array) {
+	public static int findElement(int elementToFind, int[] array) {
 		// You can use a tweaked binary search.
 		//
 		// Compare the middle element with the last element.
@@ -32,5 +32,50 @@ public class FindElementRotateDemo {
 		//		
 
 		return 0;
+	}
+
+	enum SearchState {
+		LEFT,
+		RIGHT,
+		FOUND
+	}
+
+	/**
+	 * Returns the position of the element
+	 */
+	public static int tweakedBinarySearch(int[] array, int elementToFind, int low, int high) {
+		int mid = (low + high) / 2;
+
+		if (low > high) {
+			return -1; // error
+		}
+
+		SearchState state;
+		if (array[mid] < elementToFind) {
+			if (array[mid] < array[low]) {
+				state = SearchState.LEFT; // rotation was here
+			} else {
+				state = SearchState.RIGHT;
+			}
+		} else if (array[mid] > elementToFind]) {
+			if (array[mid] > array[high]) {
+				state = SearchState.RIGHT; // rotation was here
+			} else {
+				state = SearchState.LEFT;
+			}		
+		} else {
+			state = SearchState.FOUND;
+		}
+
+		switch (state) {
+			case LEFT:
+				return tweakedBinarySearch(array, elementToFind, low, mid - 1);
+			case RIGHT:
+				return tweakedBinarySearch(array, elementToFind, mid + 1, high);
+			case FOUND:
+				return mid;
+			default:
+				return -1; // error
+		}
 	}
 }
