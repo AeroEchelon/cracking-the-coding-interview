@@ -1,6 +1,5 @@
 /**
- * Question 11.5
- *
+ * QUESTION:
  * Write a method to find the index position in an array given a word.
  * In this array, are empty strings that are randomly written throughout.
  *
@@ -12,8 +11,11 @@
  * 
  * $ javac FindWordDemo.java
  * $ java FindWordDemo
+ * 
+ * For a stripped down version of this algorithm:
+ * https://gist.github.com/AeroEchelon/ec70e86dd583c17b4306
  */
-public class FindWordDemo {
+public class FindWordVerboseDemo {
 
 	// Represents non empty character
 	public static final char EMPTY = '\0';
@@ -54,6 +56,7 @@ public class FindWordDemo {
 	 */
 	public static int tweakedBinarySearch(char[] array, char charToFind, int low, int high) {
 		loopCount++;
+		System.out.println("loopCount: " + loopCount + " Performing binary search between " + low + " and " + high + ".");
 
 		int mid = (low + high) / 2;
 		char midChar = array[mid];
@@ -61,30 +64,58 @@ public class FindWordDemo {
 		// if midChar is NON-EMPTY we can simply do a normal binary search
 		if (midChar != EMPTY) {
 			if (midChar > charToFind) {
+				System.out.println("loopCount: " + loopCount + " Found " + midChar + " at MID (position " + mid + "). Doing binary search on left side.");
 				return tweakedBinarySearch(array, charToFind, low, mid - 1);
 			} else if (midChar < charToFind) {
+				System.out.println("loopCount: " + loopCount + " Found " + midChar + " at MID (position " + mid + "). Doing binary search on right side.");
 				return tweakedBinarySearch(array, charToFind, mid + 1, high);
 			} else {
 				return mid;
 			}
+
 		} else {
 			// handle special case where mid is EMPTY
 			int count = mid - 1;
 			midChar = array[count];
 
 			// arbitrarily iterate left until you find a NON-EMPTY char to evaluate
+		    System.out.println("loopCount: " + loopCount + " Found EMPTY at MID (position " + count + "). Iterating LEFT until NON-EMPTY found.");
+		    System.out.println("loopCount: " + loopCount + " Iterating ...");
 			while (midChar == EMPTY && count > low) {
+			    System.out.println("loopCount: " + loopCount + " Found EMPTY at position " + count + ".");
 				loopCount++;
 				midChar = array[count];
 				count--;			
-			}
+			}		
+			System.out.println("loopCount: " + loopCount + " NON-EMPTY found. Found " + midChar + " at " + count + "."); 
 			if (midChar > charToFind) {
+				System.out.println("loopCount: " + loopCount + " " + charToFind + " is in this new subset array between " + low + " and " + count + ".");
 				return tweakedBinarySearch(array, charToFind, low, count);
 			} else if (midChar < charToFind) {
+				System.out.println("loopCount: " + loopCount + " Since " + charToFind + " is greater than " + midChar + ", it must be in the original other half of the array between " + (mid + 1) + " and " + high + ".");
 				return tweakedBinarySearch(array, charToFind, mid + 1, high);
 			} else {
-				return mid; // found the position!
+				// found the position!
+				return mid;
 			}
+		}
+	}
+
+	// This isn't used but here for example
+	public static int binarySearch(char[] array, char charToFind, int low, int high) {
+
+		int mid = (low + high) / 2;
+		char midChar = array[mid];
+
+		if (midChar > charToFind) {
+			// Binary search left
+			return binarySearch(array, charToFind, low, mid - 1);
+		} else if (midChar < charToFind) {
+			// Binary search right
+			return binarySearch(array, charToFind, mid + 1, high);
+		} else {
+			// Found it
+			return mid;
 		}
 	}
 }
