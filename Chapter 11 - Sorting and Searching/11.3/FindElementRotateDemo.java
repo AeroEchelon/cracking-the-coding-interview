@@ -10,72 +10,88 @@
  * Output: 8 (The index of 5 in the array).
  */
 public class FindElementRotateDemo {
+	private static int iterationCounter = 0;
 
 	public static void main(String[] args) {
-		int[] array = {7, 8, 9, 1, 2, 3, 4, 5, 6};	
-		int elementToFind = 8;
-
-		int indexOfElementToFind = findElement(elementToFind, array);
-
-		System.out.println(indexOfElementToFind);
+		test();		
 	}
 
 	public static int findElement(int elementToFind, int[] array) {
 		// You can use a tweaked binary search.
 		//
-		// Compare the middle element with the last element.
-		// If mid < last and mid < find < last, then search this array.
-		// 		Otherwise it is in other half of array.
-		// 		Because of the above condition we know that the rotate point
-		// 		is NOT in this half of the array.
-		// else
-		//		
-
-		return 0;
-	}
-
-	enum SearchState {
-		LEFT,
-		RIGHT,
-		FOUND
+		// You first determine if the RIGHT side you're evaluating is 
+		// ordered, then determine if the element you're looking for
+		// is within this range. Recursively search.
+		// 
+		// If the RIGHT side is NOT ordered, see if the element is within
+		// the range of the LEFT side. If so, search this. If not search,
+		// the other side.
+		// 
+		// Primarily, you can only guarentee that the element you're looking
+		// for is within an orderred set of numbers. If you can determine
+		// if this set is ordered you can verify if your number is within
+		// this set or not.
+		return tweakedBinarySearch(array, elementToFind, 0, array.length - 1);
 	}
 
 	/**
 	 * Returns the position of the element
 	 */
 	public static int tweakedBinarySearch(int[] array, int elementToFind, int low, int high) {
+		iterationCounter++;
+
 		int mid = (low + high) / 2;
+		System.out.println("L:" + low + "M:" + mid + "H:" + high);
+
+		if (array[mid] == elementToFind) {
+			System.out.println("FOUND AT " + mid);
+			System.out.println("iterationCounter: " + iterationCounter);
+			return mid;
+		}
 
 		if (low > high) {
-			return -1; // error
+			return -2; // error
 		}
 
-		SearchState state;
-		if (array[mid] < elementToFind) {
-			if (array[mid] < array[low]) {
-				state = SearchState.LEFT; // rotation was here
-			} else {
-				state = SearchState.RIGHT;
-			}
-		} else if (array[mid] > elementToFind]) {
-			if (array[mid] > array[high]) {
-				state = SearchState.RIGHT; // rotation was here
-			} else {
-				state = SearchState.LEFT;
-			}		
-		} else {
-			state = SearchState.FOUND;
-		}
-
-		switch (state) {
-			case LEFT:
-				return tweakedBinarySearch(array, elementToFind, low, mid - 1);
-			case RIGHT:
+		if (array[mid] <= array[high]) {
+			// there is no rotation on right side of array
+			if (elementToFind >= array[mid] && elementToFind <= array[high]) {
+				// element is within this ordered side
 				return tweakedBinarySearch(array, elementToFind, mid + 1, high);
-			case FOUND:
-				return mid;
-			default:
-				return -1; // error
+			} else {
+				// element is within the side with rotation
+				return tweakedBinarySearch(array, elementToFind, low, mid - 1);
+			}
+		} else {
+			// rotation is on left side
+			if (elementToFind >= array[low] && elementToFind <= array[mid]) {
+				// can search non-rotation side
+				return tweakedBinarySearch(array, elementToFind, low, mid - 1);
+			} else {
+				// search rotation side
+				return tweakedBinarySearch(array, elementToFind, mid + 1, high);
+			}
+		}
+	}
+
+	/* TEST UTILITIES */
+
+	public static void setup() {
+		iterationCounter = 0;
+	}
+
+	public static void test(int testNum, int[] data, int input, int expected) {
+		String resultString = findElement(input, data) == expected ? "PASSED" : "FAILED";
+		System.out.println("Test #" + testNum + " " + resultString + " Element " + data[testNum] + " was found at position " + findElement(input, data));
+	}
+
+	public static void test() {
+		int[] testInput = {7, 8, 9, 1, 2, 3, 4, 5, 6};
+		int[] testOutput = {0, 1, 2, 3, 4, 5, 6, 7, 8};
+
+		for (int i = 0; i < testInput.length; i++) {
+			setup();
+			test(i, testInput, testInput[i], testOutput[i]);
 		}
 	}
 }
