@@ -1,5 +1,6 @@
 /**
- * QUESTION:
+ * Question 11.5
+ *
  * Write a method to find the index position in an array given a word.
  * In this array, are empty strings that are randomly written throughout.
  *
