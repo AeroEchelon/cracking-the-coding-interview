@@ -1,5 +1,9 @@
 /**
  * Question 11.3
+ *
+ * This can be built through the terminal using:
+ *
+ * $ javac FindElementRotateDemo.java && java FindElementRotateDemo
  * 
  * Given a sorted array of n integers that has been rotated an unknown number of
  * times, write code to find an element in the array. You may assume that the
